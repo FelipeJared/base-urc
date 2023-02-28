@@ -26,7 +26,9 @@ def generate_launch_description():
         #     }]
         # ),
         Node(
-            package='joy', executable='joy_node', name='joy_node',
+            package='joy', 
+            executable='joy_node', 
+            name='joy_node',
             parameters=[{
                 'dev': '/dev/input/js0',
                 'deadzone': 0.3,
@@ -35,6 +37,14 @@ def generate_launch_description():
         Node(
             package='teleop_twist_joy', executable='teleop_node',
             name='teleop_twist_joy_node', parameters=[config_filepath]),
+        Node(
+            package='usb_cam', 
+            executable='usb_cam_node_exe', 
+            name='usb_cam',
+            parameters=[{
+                'camera_name': 'logitech',
+                'framerate': 30.0,
+            }]),
         Node(
             package='dynamixel_sdk_examples',
             executable='read_write_node',
