@@ -1,27 +1,42 @@
+import os
+
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration, TextSubstitution
+
+from ament_index_python.packages import get_package_share_directory
+
+
 from launch_ros.actions import Node
 
 def generate_launch_description():
+    config_filepath = LaunchConfiguration('config_filepath')
+    
     return LaunchDescription([
+        DeclareLaunchArgument('config_filepath', default_value=[
+            TextSubstitution(text=os.path.join(
+                get_package_share_directory('teleop_twist_joy'), 'config', '')),
+            'xbox', TextSubstitution(text='.config.yaml')]),
+            
+        # Node(
+        #     package='teleop_twist_joy',
+        #     executable='launch/teleop-launch.py',
+        #     parameters=[{
+        #         'joy_config': 'xbox',
+        #     }]
+        # ),
         Node(
-            package='turtlesim',
-            namespace='turtlesim1',
-            executable='turtlesim_node',
-            name='sim'
-        ),
+            package='joy', executable='joy_node', name='joy_node',
+            parameters=[{
+                'dev': '/dev/input/js0',
+                'deadzone': 0.3,
+                'autorepeat_rate': 20.0,
+            }]),
         Node(
-            package='turtlesim',
-            namespace='turtlesim2',
-            executable='turtlesim_node',
-            name='sim'
-        ),
+            package='teleop_twist_joy', executable='teleop_node',
+            name='teleop_twist_joy_node', parameters=[config_filepath]),
         Node(
-            package='turtlesim',
-            executable='mimic',
-            name='mimic',
-            remappings=[
-                ('/input/pose', '/turtlesim1/turtle1/pose'),
-                ('/output/cmd_vel', '/turtlesim2/turtle1/cmd_vel'),
-            ]
+            package='dynamixel_sdk_examples',
+            executable='read_write_node',
         )
     ])
