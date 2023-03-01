@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'teleop_node = teleop.teleop_node:main'
+            'teleop_node = teleop.teleop_node:main',
+            'listener = teleop.subscriber_member_function:main',
         ],
     },
 )
