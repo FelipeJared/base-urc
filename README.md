@@ -143,3 +143,9 @@ If you want to access the vGPU through WSL2, you'll need to add additional compo
 		"LIBGL_ALWAYS_SOFTWARE": "1" // Needed for software rendering of opengl
 	},
 ```
+
+## Using the base station
+
+      ```
+      ros2 launch launch.py
+      ```

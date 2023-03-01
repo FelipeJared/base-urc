@@ -2,3 +2,5 @@ build/*
 install/*
 log/*
 site/*
+*.pyc
+src/teleop/test/*
