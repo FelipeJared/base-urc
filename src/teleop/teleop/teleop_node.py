@@ -4,6 +4,9 @@ from rclpy.node import Node
 from std_msgs.msg import String
 from sensor_msgs.msg import Joy
 from geometry_msgs.msg import Twist
+from std_msgs.msg import Int64
+from std_msgs.msg import Float64
+from std_msgs.msg import Float64MultiArray
 
 
 class MinimalPublisher(Node):
@@ -19,11 +22,32 @@ class MinimalPublisher(Node):
             self.on_joy,
             10)
         
-        self.publisher_ = self.create_publisher(Twist, 'teleop/cmd_vel', 1)
-        self.servo_pan_speed = 5
-        self.servo_pan_max = 160
-        self.servo_pan_min = 0
-        self.servo_position = self.servo_pan_max/2
+        self.publisher_ = self.create_publisher(Twist, 'cmd_vel', 1)
+        self.servo1 = self.create_publisher(Float64, 'joint1', 1)
+        # self.servo2 = self.create_publisher(Float64, 'joint2', 1)
+        # self.servo3 = self.create_publisher(Float64, 'joint3', 1)
+        # self.servo4 = self.create_publisher(Float64, 'joint4', 1)
+
+        self.servo1_pan_speed = 5
+        self.servo1_pan_max = 160
+        self.servo1_pan_min = 0
+        self.servo1_position = self.servo1_pan_max/2
+
+        self.servo2_pan_speed = 5
+        self.servo2_pan_max = 160
+        self.servo2_pan_min = 0
+        self.servo2_position = self.servo2_pan_max/2
+
+        self.servo3_pan_speed = 5
+        self.servo3_pan_max = 160
+        self.servo3_pan_min = 0
+        self.servo3_position = self.servo3_pan_max/2
+
+        self.servo4_pan_speed = 5
+        self.servo4_pan_max = 160
+        self.servo4_pan_min = 0
+        self.servo4_position = self.servo4_pan_max/2
+
         # self.publisher_ = self.create_publisher(String, 'topic', 10)
         # timer_period = 0.5  # seconds
         # self.timer = self.create_timer(timer_period, self.timer_callback)
@@ -60,15 +84,18 @@ class MinimalPublisher(Node):
         self.publisher_.publish(twist)
 
         # Camera servo panning control
-        if data.buttons[5]: # pan rightward (right bumper)
-            if self.servo_position > self.servo_pan_min:
-                self.servo_position -= self.servo_pan_speed
         if data.buttons[4]: # pan leftward (left bumper)
-            if self.servo_position < self.servo_pan_max:
-                self.servo_position += self.servo_pan_speed
+            if self.servo1_position > self.servo1_pan_min:
+                self.servo1_position -= self.servo1_pan_speed
+        if data.buttons[5]: # pan rightward (right bumper)
+            if self.servo1_position < self.servo1_pan_max:
+                self.servo1_position += self.servo1_pan_speed
         if data.buttons[3]: # center servo position (Y button)
-            self.servo_position = self.servo_pan_max/2
-        #self.servo_pub.publish(self.servo_position)
+            self.servo1_position = self.servo1_pan_max/2
+
+        servo1_msg = Float64()
+        servo1_msg.data = self.servo1_position
+        self.servo1.publish(servo1_msg)
 
         # Cancel move base goal
         if data.buttons[2]: # X button

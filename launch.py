@@ -37,9 +37,9 @@ def generate_launch_description():
         Node(
             package='teleop', executable='teleop_node',
             name='teleop_node'),
-        Node(
-            package='teleop_twist_joy', executable='teleop_node',
-            name='teleop_twist_joy_node', parameters=[config_filepath]),
+        # Node(
+        #     package='teleop_twist_joy', executable='teleop_node',
+        #     name='teleop_twist_joy_node', parameters=[config_filepath]),
         Node(
             package='usb_cam', 
             executable='usb_cam_node_exe', 
