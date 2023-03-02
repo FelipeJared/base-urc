@@ -4,3 +4,4 @@ log/*
 site/*
 *.pyc
 src/teleop/test/*
+__pycache__/*
