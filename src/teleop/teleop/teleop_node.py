@@ -4,7 +4,8 @@ from rclpy.node import Node
 from std_msgs.msg import String
 from sensor_msgs.msg import Joy
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Int64
+from std_msgs.msg import Int32
+from std_msgs.msg import Int32MultiArray
 from std_msgs.msg import Float64
 from std_msgs.msg import Float64MultiArray
 
@@ -15,6 +16,7 @@ class MinimalPublisher(Node):
         super().__init__('teleop')
 
         self.speed_setting = 2 # default to medium speed
+        self.operating_mode = 0 # 0 for Driving, 1 for Arm
 
         self.subscription = self.create_subscription(
             Joy,
@@ -23,7 +25,8 @@ class MinimalPublisher(Node):
             10)
         
         self.publisher_ = self.create_publisher(Twist, 'cmd_vel', 1)
-        self.servo1 = self.create_publisher(Float64, 'joint1', 1)
+        self.servo1_pub = self.create_publisher(Int32, 'joint1', 1)
+        # self.servos_pub = self.create_publisher(Int32, 'joints', 1)
         # self.servo2 = self.create_publisher(Float64, 'joint2', 1)
         # self.servo3 = self.create_publisher(Float64, 'joint3', 1)
         # self.servo4 = self.create_publisher(Float64, 'joint4', 1)
@@ -93,9 +96,9 @@ class MinimalPublisher(Node):
         if data.buttons[3]: # center servo position (Y button)
             self.servo1_position = self.servo1_pan_max/2
 
-        servo1_msg = Float64()
-        servo1_msg.data = self.servo1_position
-        self.servo1.publish(servo1_msg)
+        servo1_msg = Int32()
+        servo1_msg.data = int(self.servo1_position)
+        self.servo1_pub.publish(servo1_msg)
 
         # Cancel move base goal
         if data.buttons[2]: # X button
@@ -103,6 +106,21 @@ class MinimalPublisher(Node):
             # rospy.loginfo('Cancelling move_base goal')
             # cancel_msg = GoalID()
             # self.goal_cancel_pub.publish(cancel_msg)
+
+        if data.buttons[3]: # Y button
+            if self.operating_mode == 0:
+                self.operating_mode = 1
+                self.get_logger().info('Changed to Arm Operation Mode')
+            elif self.operating_mode == 1:
+                self.operating_mode = 0
+                self.get_logger().info('Changed to Driving Mode')
+
+        if data.buttons[7]: # Start button
+            self.operating_mode = 0
+            self.get_logger().info('Changed to Driving Mode')
+        elif data.buttons[6]: # Share button
+            self.operating_mode = 1
+            self.get_logger().info('Changed to Arm Operation Mode')
 
 def main(args=None):
     rclpy.init(args=args)
